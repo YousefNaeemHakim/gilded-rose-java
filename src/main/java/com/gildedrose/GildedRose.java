@@ -24,17 +24,17 @@ class GildedRose {
 
     private ItemUpdater getItemUpdater(Item item) {
         // Determine the appropriate updater for each item based on its name.
-        if (item.name.equals("Aged Brie")) {
-            return new AgedBrieUpdater();
-        } else if (item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-            return new BackstagePassUpdater();
-        } else if (item.name.equals("Sulfuras, Hand of Ragnaros")) {
-            return new SulfurasUpdater();
-        } else if (item.name.equals("Conjured Mana Cake")) { // Corrected the item name check
-            return new ConjuredItemUpdater();
-        } else {
-            // Default updater
-            return new RegularItemUpdater();
+        switch (item.name) {
+            case "Aged Brie":
+                return new AgedBrieUpdater();
+            case "Backstage passes to a TAFKAL80ETC concert":
+                return new BackstagePassUpdater();
+            case "Sulfuras, Hand of Ragnaros":
+                return new SulfurasUpdater();
+            case "Conjured Mana Cake":
+                return new ConjuredItemUpdater();
+            default:
+                return new RegularItemUpdater();
         }
     }
 
