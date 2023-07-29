@@ -9,34 +9,69 @@ class GildedRose {
 
     public void updateQuality() {
         for (Item item : items) {
-            if (item.name.equals("Aged Brie")) {
-                increaseQuality(item);
-            } else if (item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                increaseQuality(item);
-                if (item.sellIn < 11) {
-                    increaseQuality(item);
-                }
-                if (item.sellIn < 6) {
-                    increaseQuality(item);
-                }
-            } else if (item.name.equals("Sulfuras, Hand of Ragnaros")) {
-                // As mentioned, Sulfuras doesn't change in quality or sellIn.
-            } else {
-                decreaseQuality(item);
-            }
-
+            ItemUpdater itemUpdater = getItemUpdater(item);
+            itemUpdater.updateQuality(item);
+        }
+    }
+    
+    private ItemUpdater getItemUpdater(Item item) {
+        if (item.name.equals("Aged Brie")) {
+            return new AgedBrieUpdater();
+        } else if (item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
+            return new BackstagePassUpdater();
+        } else if (item.name.equals("Sulfuras, Hand of Ragnaros")) {
+            return new SulfurasUpdater();
+        } else {
+            return new RegularItemUpdater();
+        }
+    }
+    
+    interface ItemUpdater {
+        void updateQuality(Item item);
+    }
+    
+    class AgedBrieUpdater implements ItemUpdater {
+        @Override
+        public void updateQuality(Item item) {
+            increaseQuality(item);
             decreaseSellIn(item);
-
             if (item.sellIn < 0) {
-                if (!item.name.equals("Aged Brie")) {
-                    if (!item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-                        decreaseQuality(item);
-                    } else {
-                        item.quality = 0;
-                    }
-                } else {
-                    increaseQuality(item);
-                }
+                increaseQuality(item);
+            }
+        }
+    }
+    
+    class BackstagePassUpdater implements ItemUpdater {
+        @Override
+        public void updateQuality(Item item) {
+            increaseQuality(item);
+            if (item.sellIn < 11) {
+                increaseQuality(item);
+            }
+            if (item.sellIn < 6) {
+                increaseQuality(item);
+            }
+            decreaseSellIn(item);
+            if (item.sellIn < 0) {
+                item.quality = 0;
+            }
+        }
+    }
+    
+    class SulfurasUpdater implements ItemUpdater {
+        @Override
+        public void updateQuality(Item item) {
+            // Sulfuras never changes in quality or sellIn
+        }
+    }
+    
+    class RegularItemUpdater implements ItemUpdater {
+        @Override
+        public void updateQuality(Item item) {
+            decreaseQuality(item);
+            decreaseSellIn(item);
+            if (item.sellIn < 0) {
+                decreaseQuality(item);
             }
         }
     }
